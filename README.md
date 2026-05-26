@@ -120,6 +120,46 @@ The app comes pre-loaded with demo data. Log in using any of these accounts:
 
 ---
 
+## 🗺️ Pages by Role
+
+### 👑 Admin Pages
+
+| Page | URL |
+|------|-----|
+| Dashboard | `/admin/dashboard` |
+| Manage Orders | `/admin/orders` |
+| Order Details | `/admin/orders/{id}` |
+| Manage Services | `/admin/services` |
+| Manage Staff | `/admin/staff` |
+| Analytics & Reports | `/admin/reports` |
+
+### 👔 Staff Pages
+
+| Page | URL |
+|------|-----|
+| Dashboard | `/staff/dashboard` |
+| Assigned Tasks | `/staff/orders` |
+| Task Details | `/staff/orders/{id}` |
+
+### 👤 Customer Pages
+
+| Page | URL |
+|------|-----|
+| Dashboard | `/customer/dashboard` |
+| Place New Order | `/customer/orders/new` |
+| My Orders | `/customer/orders` |
+
+### Utility Pages
+
+| Page | URL |
+|------|-----|
+| Access Denied | `/access-denied` |
+| H2 Console | `/h2-console` |
+
+> 💡 **Tip:** The `/dashboard` endpoint auto-redirects you to the correct role-specific dashboard based on your login.
+
+---
+
 ## 🏗️ Architecture
 
 ```
@@ -190,13 +230,13 @@ API specs also available in:
 - **JSON:** `http://localhost:8080/v3/api-docs`
 - **YAML:** `http://localhost:8080/v3/api-docs.yaml`
 
-### Sample API Call
+### Sample API Calls
 
 ```bash
 # Public — list all services
 curl http://localhost:8080/api/services
 
-# Authenticated — place an order (use session cookie)
+# Authenticated — place an order (needs login session cookie)
 curl -X POST http://localhost:8080/api/orders \
   -H "Content-Type: application/json" \
   -d '{
@@ -208,6 +248,24 @@ curl -X POST http://localhost:8080/api/orders \
     ]
   }'
 ```
+
+### 🧪 Testing APIs with Swagger UI
+
+1. **Log in** via the web app at `http://localhost:8080/login` using any demo account
+2. **Open** `http://localhost:8080/swagger-ui/index.html` in the **same browser** (session cookie is shared)
+3. **Browse endpoints** — expand any section (Orders, Services)
+4. **Try it out** — click **Try it out**, enter parameters, click **Execute**
+
+**Quick test sequence (recommended):**
+
+| Step | Endpoint | What to Enter | Expected Result |
+|------|----------|---------------|----------------|
+| 1️⃣ | `GET /api/services` | Nothing (public) | ✅ 200 — JSON array of 5 services |
+| 2️⃣ | `POST /api/orders` | JSON body (see above) | ✅ 201 — Order created |
+| 3️⃣ | `PATCH /api/orders/{id}/status` | id=1, status=PICKED_UP | ✅ 200 — Status updated |
+| 4️⃣ | `DELETE /api/orders/{id}` | id=1 | ✅ 204 — Order deleted |
+
+> **🔐 Authenticated endpoints:** Swagger uses your browser's login session automatically — no need to manually pass tokens.
 
 ---
 
