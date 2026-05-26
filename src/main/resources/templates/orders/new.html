@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Place Booking', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#new-order-content}, 'New Booking Request')}">
+    <div id="new-order-content">
+
+        <div class="grid-2col">
+            <!-- Left Form Panel -->
+            <div class="card-panel fade-in-up">
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
+                    <i class="fas fa-file-signature" style="color: var(--neon-cyan); margin-right: 8px;"></i> Schedule Pickup Details
+                </h3>
+
+                <form id="bookingForm" th:action="@{/customer/orders/new}" th:object="${orderForm}" method="post">
+                    <div class="form-group">
+                        <label for="pickupDate" class="form-label">Select Pickup Date &amp; Time</label>
+                        <input type="datetime-local" id="pickupDate" th:field="*{pickupDate}" class="form-input" required>
+                        <div class="form-error" th:if="${#fields.hasErrors('pickupDate')}" th:errors="*{pickupDate}"></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 15px;">
+                        <h4 style="font-size: 15px; font-weight: 700; color: var(--text-primary);">Select Laundry Services</h4>
+                        <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;" onclick="addDynamicRow()">
+                            <i class="fas fa-plus"></i> Add Service Line
+                        </button>
+                    </div>
+
+                    <table class="custom-table" style="box-shadow: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 20px;">
+                        <thead>
+                            <tr>
+                                <th>Service Category</th>
+                                <th>Est. Qty (Kg/Pcs)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody"></tbody>
+                    </table>
+                    <div class="form-error" th:if="${#fields.hasErrors('items')}" th:errors="*{items}" style="margin-bottom: 20px;"></div>
+
+                    <div class="form-group" style="max-width: 250px;">
+                        <label for="discount" class="form-label">Promo Discount (₹)</label>
+                        <input type="number" id="discount" th:field="*{discount}" class="form-input" placeholder="0.00" oninput="calculateEstimates()">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                        <i class="fas fa-calendar-check"></i> Book Schedule Pickup
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Estimation Summary Panel -->
+            <div class="card-panel fade-in-up" style="height: fit-content;">
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
+                    <i class="fas fa-calculator" style="color: var(--neon-emerald); margin-right: 8px;"></i> Live Billing Estimator
+                </h3>
+
+                <div style="font-size: 14px; display: flex; flex-direction: column; gap: 15px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);">Estimated Subtotal:</span>
+                        <strong id="estSubtotal" style="color: var(--text-primary);">₹0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);">Taxes &amp; GST (18%):</span>
+                        <strong id="estTax" style="color: var(--text-primary);">₹0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: var(--neon-rose);">
+                        <span>Deducted Promo Discount:</span>
+                        <strong id="estDiscount">-₹0.00</strong>
+                    </div>
+                    <hr style="border: 0; border-top: 1.5px dashed var(--border-color); margin: 5px 0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 16px;">
+                        <span style="font-weight: 700; color: var(--text-primary);">Estimated Grand Total:</span>
+                        <strong style="color: var(--neon-cyan); font-size: 20px;" id="estGrandTotal">₹0.00</strong>
+                    </div>
+                    <div class="alert alert-warning" style="margin-bottom: 0; padding: 10px 14px; font-size: 12px; font-weight: 500;">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Billing computed: Base Price + (Price/Kg × weight). Weights verified during collection.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const serviceCatalog = /*[[${catalog}]]*/ [];
+    let rowIndex = 0;
+    const tableBody = document.getElementById('itemsTableBody');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        addDynamicRow();
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('pickupDate').min = now.toISOString().slice(0, 16);
+    });
+
+    function addDynamicRow() {
+        const row = document.createElement('tr');
+        row.id = `row-${rowIndex}`;
+        let selectOptions = '';
+        serviceCatalog.forEach(service => {
+            selectOptions += `<option value="${service.id}" data-base="${service.basePrice}" data-perkg="${service.pricePerKg}">${service.name} (Base ₹${service.basePrice}, ₹${service.pricePerKg}/kg)</option>`;
+        });
+        row.innerHTML = `
+            <td>
+                <select name="items[${rowIndex}].serviceId" class="form-input" style="padding: 8px;" onchange="calculateEstimates()" required>
+                    ${selectOptions}
+                </select>
+            </td>
+            <td>
+                <input type="number" name="items[${rowIndex}].quantity" class="form-input" min="1" step="0.5" value="1.0" oninput="calculateEstimates()" required>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger" style="padding: 6px 10px; font-size: 13px;" onclick="removeDynamicRow(${rowIndex})">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+        rowIndex++;
+        calculateEstimates();
+    }
+
+    function removeDynamicRow(index) {
+        if (tableBody.children.length <= 1) {
+            alert('Your booking must contain at least one service line.');
+            return;
+        }
+        document.getElementById(`row-${index}`).remove();
+        calculateEstimates();
+    }
+
+    function calculateEstimates() {
+        let subtotal = 0;
+        tableBody.querySelectorAll('tr').forEach(row => {
+            const select = row.querySelector('select');
+            const qtyInput = row.querySelector('input[type="number"]');
+            if (select && qtyInput) {
+                const opt = select.options[select.selectedIndex];
+                const base = parseFloat(opt.getAttribute('data-base')) || 0;
+                const perKg = parseFloat(opt.getAttribute('data-perkg')) || 0;
+                const qty = parseFloat(qtyInput.value) || 0;
+                subtotal += base + (perKg * qty);
+            }
+        });
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
+        const tax = subtotal * 0.18;
+        const grandTotal = Math.max(0, subtotal + tax - discount);
+        document.getElementById('estSubtotal').innerText = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('estTax').innerText = `₹${tax.toFixed(2)}`;
+        document.getElementById('estDiscount').innerText = `-₹${discount.toFixed(2)}`;
+        document.getElementById('estGrandTotal').innerText = `₹${grandTotal.toFixed(2)}`;
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

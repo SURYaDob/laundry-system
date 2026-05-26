@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Staff Task breakdown', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#staff-details-content}, 'Task Details')}">
+    <div id="staff-details-content">
+
+        <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <a th:href="@{/staff/orders}" class="btn btn-secondary" style="padding: 8px 16px;">
+                <i class="fas fa-arrow-left"></i> Back to Tasks
+            </a>
+            <span th:class="'badge badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom: 30px;">
+            <!-- Left: Progress controls & Items -->
+            <div>
+                <div class="card-panel fade-in-up" style="margin-bottom: 30px; border-color: var(--neon-cyan-dim); background: var(--neon-cyan-dim);">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--neon-cyan); margin-bottom: 15px;">
+                        <i class="fas fa-arrows-spin"></i> Update Progress Stage
+                    </h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <form th:action="@{/staff/orders/status}" method="post" th:if="${order.status == 'PENDING'}">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <input type="hidden" name="status" value="PICKED_UP">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-truck"></i> Mark Picked Up</button>
+                        </form>
+                        <form th:action="@{/staff/orders/status}" method="post" th:if="${order.status == 'PICKED_UP'}">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <input type="hidden" name="status" value="WASHING">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-hands-bubbles"></i> Start Washing</button>
+                        </form>
+                        <form th:action="@{/staff/orders/status}" method="post" th:if="${order.status == 'WASHING'}">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <input type="hidden" name="status" value="IRONING">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-temperature-high"></i> Start Ironing</button>
+                        </form>
+                        <form th:action="@{/staff/orders/status}" method="post" th:if="${order.status == 'IRONING'}">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <input type="hidden" name="status" value="READY">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-box-archive"></i> Mark Ready for Delivery</button>
+                        </form>
+                        <form th:action="@{/staff/orders/status}" method="post" th:if="${order.status == 'READY'}">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <input type="hidden" name="status" value="OUT_FOR_DELIVERY">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-shipping-fast"></i> Ship for Delivery</button>
+                        </form>
+                        <form th:action="@{/staff/orders/status}" method="post" th:if="${order.status == 'OUT_FOR_DELIVERY'}">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <input type="hidden" name="status" value="DELIVERED">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-check-circle"></i> Complete Delivery</button>
+                        </form>
+                        <div th:if="${order.status == 'DELIVERED'}" style="color: var(--neon-emerald); font-weight: 700; font-size: 14px;">
+                            <i class="fas fa-calendar-check"></i> Job completed and delivered!
+                        </div>
+                        <div th:if="${order.status == 'CANCELLED'}" style="color: var(--neon-rose); font-weight: 700; font-size: 14px;">
+                            <i class="fas fa-ban"></i> Job was cancelled.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-panel fade-in-up">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 15px;">Booked Items Details</h3>
+                    <table class="custom-table" style="box-shadow: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                        <thead>
+                            <tr>
+                                <th>Laundry Service</th>
+                                <th>Quantity (Kg/Pcs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${order.orderItems}">
+                                <td th:text="${item.service.name}" style="font-weight: 600;">Wash &amp; Fold</td>
+                                <td th:text="${item.quantity}">3.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right: Address & Dates -->
+            <div>
+                <div class="card-panel fade-in-up" style="margin-bottom: 30px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                        <i class="fas fa-location-dot" style="color: var(--neon-cyan); margin-right: 8px;"></i> Customer Address &amp; Phone
+                    </h3>
+                    <div style="font-size: 14px; display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Customer Name</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.user.fullName}">Jane Doe</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Phone Number</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.phoneNumber}">9876543210</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Pickup/Delivery Address</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.address}">Flat 102, Green Avenue, Mumbai</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-panel fade-in-up">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                        <i class="fas fa-clock" style="color: var(--neon-amber); margin-right: 8px;"></i> Scheduled Dates
+                    </h3>
+                    <div style="font-size: 14px; display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Scheduled Collection</span>
+                            <strong style="color: var(--text-primary);" th:text="${#temporals.format(order.pickupDate, 'dd-MM-yyyy HH:mm')}">26-05-2026 10:00</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Target Delivery Date</span>
+                            <strong style="color: var(--text-primary);" th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}">28-05-2026</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

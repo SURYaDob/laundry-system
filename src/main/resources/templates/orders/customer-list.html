@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('My Bookings', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#cust-list-content}, 'My Bookings History')}">
+    <div id="cust-list-content">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <p style="color: var(--text-secondary); font-size: 14px;">Track and monitor all laundry orders placed under your account, print/download legal PDF invoices, and monitor statuses.</p>
+            <a th:href="@{/customer/orders/new}" class="btn btn-primary">
+                <i class="fas fa-cart-plus"></i> Place New Booking
+            </a>
+        </div>
+
+        <div class="table-container fade-in-up">
+            <div class="table-header">
+                <span class="table-title">
+                    <i class="fas fa-receipt" style="color: var(--neon-cyan); margin-right: 8px;"></i> Booking History
+                </span>
+            </div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Order No</th>
+                        <th>Created Date</th>
+                        <th>Pickup Date</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
+                        <th>Payment Status</th>
+                        <th>Invoice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${myOrders}">
+                        <td th:text="${order.orderNumber}" style="font-weight: 700;">ORD-10023</td>
+                        <td th:text="${#temporals.format(order.createdDate, 'dd-MM-yyyy HH:mm')}">25-05-2026 14:20</td>
+                        <td th:text="${#temporals.format(order.pickupDate, 'dd-MM-yyyy HH:mm')}">26-05-2026 10:00</td>
+                        <td>
+                            <span th:class="'badge badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+                        </td>
+                        <td th:text="'₹' + ${#numbers.formatDecimal(order.finalAmount, 1, 'COMMA', 2, 'POINT')}">₹450.00</td>
+                        <td>
+                            <span th:if="${order.payment != null and order.payment.status == 'COMPLETED'}" class="badge badge-completed">Paid</span>
+                            <span th:if="${order.payment == null or order.payment.status != 'COMPLETED'}" class="badge badge-pending">Unpaid</span>
+                        </td>
+                        <td>
+                            <th:block th:if="${order.invoice != null}">
+                                <a th:href="@{/customer/invoices/download/{orderId}(orderId=${order.id})}" class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; color: var(--neon-cyan); border-color: var(--neon-cyan-dim);">
+                                    <i class="fas fa-download"></i> PDF Invoice
+                                </a>
+                            </th:block>
+                            <span th:if="${order.invoice == null}" style="font-size: 13px; color: var(--text-muted);">Generating...</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(myOrders)}">
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            No laundry bookings recorded. Click 'Place New Booking' to start!
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

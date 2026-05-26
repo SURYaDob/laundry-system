@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="html_head(title, links)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - AquaClean Luxe'"></title>
+    
+    <!-- Icons & Font Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    
+    <!-- Optional Page Specific Styles -->
+    <th:block th:replace="${links}"></th:block>
+</head>
+<body>
+
+<div class="app-container" th:fragment="app_layout(content, pageName)">
+    
+    <!-- Sidebar Component -->
+    <aside class="app-sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-soap brand-icon"></i>
+            <span>AquaClean Luxe</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <!-- COMMON / ALL ROLES -->
+            <li class="menu-item">
+                <a class="menu-link" th:href="@{/dashboard}">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+            </li>
+            
+            <!-- ADMIN ONLY LINKS -->
+            <th:block sec:authorize="hasRole('ADMIN')">
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/admin/orders}">
+                        <i class="fas fa-list-check"></i> Orders
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/admin/services}">
+                        <i class="fas fa-tags"></i> Services CRUD
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/admin/staff}">
+                        <i class="fas fa-users-gear"></i> Staff CRUD
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/admin/reports}">
+                        <i class="fas fa-chart-pie"></i> Analytics & Reports
+                    </a>
+                </li>
+            </th:block>
+            
+            <!-- STAFF ONLY LINKS -->
+            <th:block sec:authorize="hasRole('STAFF')">
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/staff/orders}">
+                        <i class="fas fa-tasks"></i> Assigned Orders
+                    </a>
+                </li>
+            </th:block>
+            
+            <!-- CUSTOMER ONLY LINKS -->
+            <th:block sec:authorize="hasRole('CUSTOMER')">
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/customer/orders/new}">
+                        <i class="fas fa-cart-plus"></i> Place Order
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" th:href="@{/customer/orders}">
+                        <i class="fas fa-receipt"></i> My Orders
+                    </a>
+                </li>
+            </th:block>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile-badge">
+                <div class="avatar" th:text="${#strings.substring(#authentication.name,0,1).toUpperCase()}">U</div>
+                <div class="profile-info">
+                    <div class="profile-name" sec:authentication="name">User</div>
+                    <div class="profile-role">
+                        <span sec:authorize="hasRole('ADMIN')">Administrator</span>
+                        <span sec:authorize="hasRole('STAFF')">Laundry Staff</span>
+                        <span sec:authorize="hasRole('CUSTOMER')">Customer</span>
+                    </div>
+                </div>
+            </div>
+            
+            <a th:href="@{/logout}" class="menu-link" style="margin-top: 15px; color: #ef4444;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main Panel -->
+    <main class="main-panel">
+        <!-- Top Nav Bar -->
+        <header class="top-nav">
+            <div class="nav-title">
+                <h1 th:text="${pageName}">Dashboard</h1>
+                <p>Welcome to AquaClean Management Portal</p>
+            </div>
+            
+            <div class="nav-actions">
+                <!-- Mobile Toggler -->
+                <button id="sidebar-toggle" class="btn btn-secondary" style="display: none; padding: 8px 12px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <span class="badge-live">
+                    <i class="fas fa-calendar-day" style="margin-right: 6px;"></i> Live Portal
+                </span>
+            </div>
+        </header>
+        
+        <!-- Alerts Block -->
+        <div th:if="${param.success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${param.success}">Operation was successful!</span>
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>An error occurred, please verify inputs.</span>
+        </div>
+        
+        <!-- Dynamic Content Injected here -->
+        <th:block th:replace="${content}"></th:block>
+        
+    </main>
+</div>
+
+<!-- Essential Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+
+<!-- Mobile sidebar helper script -->    <!-- Mobile sidebar visibility handled by dashboard.js -->
+</body>
+</html>

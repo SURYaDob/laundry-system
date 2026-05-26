@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Customer Dashboard', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#customer-content}, 'My Dashboard')}">
+    <div id="customer-content">
+
+        <!-- Welcome Banner -->
+        <div class="card-gradient" style="margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; padding: 28px;">
+            <div>
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" th:text="'Hello, ' + ${currentUser.firstName} + '!'">Hello, Customer!</h2>
+                <p style="color: var(--text-secondary); font-size: 14px;">Need fresh laundry? Book a premium home pickup service in just a click.</p>
+            </div>
+            <a th:href="@{/customer/orders/new}" class="btn btn-primary" style="padding: 12px 20px;">
+                <i class="fas fa-cart-plus"></i> Book Pickup Now
+            </a>
+        </div>
+
+        <!-- Live Order Status Tracker -->
+        <th:block th:if="${not #lists.isEmpty(myOrders) and myOrders[0].status != 'DELIVERED' and myOrders[0].status != 'CANCELLED'}">
+            <div class="card-panel" style="margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary);">
+                        <i class="fas fa-route" style="color: var(--neon-cyan); margin-right: 8px;"></i>
+                        Live Tracking: Order <span th:text="${myOrders[0].orderNumber}" style="font-weight: 800;">ORD-001</span>
+                    </h3>
+                    <span th:class="'badge badge-' + ${#strings.toLowerCase(myOrders[0].status)}" th:text="${myOrders[0].status}">WASHING</span>
+                </div>
+
+                <div class="tracker-flow">
+                    <div th:class="'tracker-step ' + (${myOrders[0].status == 'PENDING'} ? 'active' : 'completed')">
+                        <div class="tracker-icon"><i class="fas fa-file-invoice"></i></div>
+                        <div class="tracker-label">Booked</div>
+                    </div>
+                    <div th:class="'tracker-step ' + (${myOrders[0].status == 'PICKED_UP'} ? 'active' : (${#lists.contains({'PENDING'}, myOrders[0].status)} ? '' : 'completed'))">
+                        <div class="tracker-icon"><i class="fas fa-truck"></i></div>
+                        <div class="tracker-label">Picked Up</div>
+                    </div>
+                    <div th:class="'tracker-step ' + (${myOrders[0].status == 'WASHING'} ? 'active' : (${#lists.contains({'PENDING', 'PICKED_UP'}, myOrders[0].status)} ? '' : 'completed'))">
+                        <div class="tracker-icon"><i class="fas fa-hands-bubbles"></i></div>
+                        <div class="tracker-label">Washing</div>
+                    </div>
+                    <div th:class="'tracker-step ' + (${myOrders[0].status == 'IRONING'} ? 'active' : (${#lists.contains({'PENDING', 'PICKED_UP', 'WASHING'}, myOrders[0].status)} ? '' : 'completed'))">
+                        <div class="tracker-icon"><i class="fas fa-temperature-high"></i></div>
+                        <div class="tracker-label">Ironing</div>
+                    </div>
+                    <div th:class="'tracker-step ' + (${myOrders[0].status == 'READY'} ? 'active' : (${#lists.contains({'PENDING', 'PICKED_UP', 'WASHING', 'IRONING'}, myOrders[0].status)} ? '' : 'completed'))">
+                        <div class="tracker-icon"><i class="fas fa-box-archive"></i></div>
+                        <div class="tracker-label">Ready</div>
+                    </div>
+                    <div th:class="'tracker-step ' + (${myOrders[0].status == 'OUT_FOR_DELIVERY'} ? 'active' : (${#lists.contains({'PENDING', 'PICKED_UP', 'WASHING', 'IRONING', 'READY'}, myOrders[0].status)} ? '' : 'completed'))">
+                        <div class="tracker-icon"><i class="fas fa-shipping-fast"></i></div>
+                        <div class="tracker-label">On Way</div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <!-- My Orders Table -->
+        <div class="table-container fade-in-up">
+            <div class="table-header">
+                <span class="table-title">
+                    <i class="fas fa-clock-rotate-left" style="color: var(--neon-cyan); margin-right: 8px;"></i> Order History &amp; Invoices
+                </span>
+            </div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Order No</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
+                        <th>Estimated Delivery</th>
+                        <th>Payment</th>
+                        <th>Invoice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${myOrders}">
+                        <td th:text="${order.orderNumber}" style="font-weight: 700;">ORD-10023</td>
+                        <td>
+                            <span th:class="'badge badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+                        </td>
+                        <td th:text="'₹' + ${#numbers.formatDecimal(order.finalAmount, 1, 'COMMA', 2, 'POINT')}">₹450.00</td>
+                        <td th:text="${order.deliveryDate != null ? #temporals.format(order.deliveryDate, 'dd-MM-yyyy') : 'Calculating...'}">Calculating...</td>
+                        <td>
+                            <span th:if="${order.payment != null and order.payment.status == 'COMPLETED'}" class="badge badge-completed" style="background: var(--neon-emerald-dim); color: var(--neon-emerald); border: 1px solid rgba(16,185,129,0.2);">Paid</span>
+                            <span th:if="${order.payment == null or order.payment.status != 'COMPLETED'}" class="badge badge-pending">Unpaid</span>
+                        </td>
+                        <td>
+                            <th:block th:if="${order.invoice != null}">
+                                <a th:href="@{/customer/invoices/download/{orderId}(orderId=${order.id})}" class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; color: var(--neon-cyan); border-color: var(--neon-cyan-dim);">
+                                    <i class="fas fa-download"></i> PDF
+                                </a>
+                            </th:block>
+                            <span th:if="${order.invoice == null}" style="font-size: 13px; color: var(--text-muted);">Processing</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(myOrders)}">
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            No laundry orders placed yet.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

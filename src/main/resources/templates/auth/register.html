@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - AquaClean Luxe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <!-- Background particles -->
+    <div class="bg-particles">
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div>
+    </div>
+
+    <div class="auth-card" style="max-width: 560px; padding: 32px;">
+        <div class="auth-header" style="margin-bottom: 24px;">
+            <div class="auth-logo">
+                <i class="fas fa-soap"></i> Create Account
+            </div>
+            <p class="auth-subtitle">Join AquaClean for Premium Laundry Care</p>
+        </div>
+
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" class="form-input" placeholder="John" required>
+                    <div class="form-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" class="form-input" placeholder="Doe" required>
+                    <div class="form-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" id="email" th:field="*{email}" class="form-input" placeholder="john.doe@example.com" required>
+                <div class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" th:field="*{password}" class="form-input" placeholder="••••••••" required>
+                    <div class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-input" placeholder="9876543210" required>
+                    <div class="form-error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="address" class="form-label">Pickup/Delivery Address</label>
+                <textarea id="address" th:field="*{address}" class="form-input" rows="3" placeholder="Flat No, Street, City, ZIP Code" style="resize: none;" required></textarea>
+                <div class="form-error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted);">
+            Already have an account?
+            <a th:href="@{/login}" style="color: var(--neon-cyan); font-weight: 600; text-decoration: none; transition: all 0.2s ease;"
+               onmouseover="this.style.textShadow='0 0 10px rgba(0,240,255,0.5)'"
+               onmouseout="this.style.textShadow='none'">Login here</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

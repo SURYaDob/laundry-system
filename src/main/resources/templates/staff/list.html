@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Manage Staff', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#staff-list-content}, 'Laundry Staff Management')}">
+    <div id="staff-list-content">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <p style="color: var(--text-secondary); font-size: 14px;">Onboard specialized staff members, define specializations (e.g. Ironing, Dry Clean), monitor active status, and track system users.</p>
+            <button class="btn btn-primary" onclick="openStaffModal()">
+                <i class="fas fa-user-plus"></i> Add Staff Member
+            </button>
+        </div>
+
+        <div class="table-container fade-in-up">
+            <div class="table-header">
+                <span class="table-title">
+                    <i class="fas fa-users-gear" style="color: var(--neon-cyan); margin-right: 8px;"></i> Registered Staff Grid
+                </span>
+            </div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Staff Name</th>
+                        <th>Email Address</th>
+                        <th>Phone Number</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="staff : ${staffList}">
+                        <td th:text="${staff.id}" style="font-weight: 700; color: var(--text-muted);">1</td>
+                        <td th:text="${staff.user.fullName}" style="font-weight: 700;">John Staff</td>
+                        <td th:text="${staff.user.email}" style="color: var(--text-secondary);">john@laundry.com</td>
+                        <td th:text="${staff.phoneNumber}">9876543210</td>
+                        <td>
+                            <span class="badge badge-ready" th:text="${staff.specialization}">Ironing specialist</span>
+                        </td>
+                        <td>
+                            <span th:class="'badge ' + (${staff.status == 'ACTIVE'} ? 'badge-completed' : 'badge-cancelled')" th:text="${staff.status}">ACTIVE</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/staff/delete/{id}(id=${staff.id})}" method="post" th:if="${staff.status == 'ACTIVE'}" onsubmit="return confirm('Are you sure you want to deactivate this staff member?');" style="display: inline;">
+                                <button type="submit" class="btn btn-danger" style="padding: 6px 10px; font-size: 13px;">
+                                    <i class="fas fa-user-slash"></i> Deactivate
+                                </button>
+                            </form>
+                            <span th:if="${staff.status != 'ACTIVE'}" style="font-size: 13px; color: var(--text-muted);">No actions</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(staffList)}">
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            No staff accounts registered. Click 'Add Staff Member' to get started!
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Dark Theme Modal for Add Staff -->
+        <div id="staffModal" class="modal-overlay">
+            <div class="modal-card" style="max-width: 550px;">
+                <div class="modal-header">
+                    <div class="auth-logo" style="font-size: 22px; margin-bottom: 0;">Add Staff Member</div>
+                    <button onclick="closeStaffModal()" class="modal-close"><i class="fas fa-times"></i></button>
+                </div>
+
+                <form th:action="@{/admin/staff/new}" th:object="${staffForm}" method="post">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" id="firstName" th:field="*{firstName}" class="form-input" placeholder="Alex" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" id="lastName" th:field="*{lastName}" class="form-input" placeholder="Staff" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" th:field="*{email}" class="form-input" placeholder="alex@laundrysystem.com" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="password" class="form-label">Secure Password</label>
+                            <input type="password" id="password" th:field="*{password}" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-input" placeholder="9876543210" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="specialization" class="form-label">Job Specialization</label>
+                        <select id="specialization" th:field="*{specialization}" class="form-input" required>
+                            <option value="Washing & Folding">Washing &amp; Folding</option>
+                            <option value="Steam Ironing">Steam Ironing</option>
+                            <option value="Dry Cleaning">Dry Cleaning</option>
+                            <option value="Premium Care & Stain Removal">Premium Care &amp; Stain Removal</option>
+                            <option value="Home Delivery Handler">Home Delivery Handler</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeStaffModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('staffModal');
+    function openStaffModal() { modal.classList.add('show'); }
+    function closeStaffModal() { modal.classList.remove('show'); }
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeStaffModal(); });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Analytics & Reports', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#analytics-panel-content}, 'Analytics & Reports')}">
+    <div id="analytics-panel-content">
+
+        <div style="margin-bottom: 25px;">
+            <p style="color: var(--text-secondary); font-size: 14px;">Review business growth metrics, revenue trajectories, service popularity distributions, and pending task bottlenecks.</p>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="stat-grid fade-in-up" style="margin-bottom: 30px;">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Gross Revenue</div>
+                    <div class="stat-value" th:text="'₹' + ${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 2, 'POINT')}">₹0.00</div>
+                    <span style="font-size: 12px; color: var(--neon-emerald); font-weight: 600;"><i class="fas fa-caret-up"></i> +12% vs last month</span>
+                </div>
+                <div class="stat-icon stat-green">
+                    <i class="fas fa-indian-rupee-sign"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Bookings</div>
+                    <div class="stat-value" th:text="${totalOrders}">0</div>
+                    <span style="font-size: 12px; color: var(--neon-emerald); font-weight: 600;"><i class="fas fa-caret-up"></i> +8% vs last month</span>
+                </div>
+                <div class="stat-icon stat-blue">
+                    <i class="fas fa-shopping-basket"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Pending Collection</div>
+                    <div class="stat-value" th:text="${pendingOrders}">0</div>
+                    <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Active in-laundry queue</span>
+                </div>
+                <div class="stat-icon stat-amber">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-Chart Layout -->
+        <div class="grid-2col" style="margin-bottom: 30px;">
+            <div class="card-panel fade-in-up">
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px;">
+                    <i class="fas fa-chart-area" style="color: var(--neon-cyan); margin-right: 8px;"></i> Month-on-Month Revenue Expansion
+                </h3>
+                <div style="height: 350px; position: relative;">
+                    <canvas id="revenueTrendChart"></canvas>
+                </div>
+            </div>
+            <div class="card-panel fade-in-up">
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px;">
+                    <i class="fas fa-pie-chart" style="color: var(--neon-purple); margin-right: 8px;"></i> Service Share
+                </h3>
+                <div style="height: 350px; position: relative;">
+                    <canvas id="serviceShareChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const revenueLabels = /*[[${revenueLabels}]]*/ [];
+    const revenueValues = /*[[${revenueValues}]]*/ [];
+    const serviceLabels = /*[[${serviceLabels}]]*/ [];
+    const serviceCounts = /*[[${serviceCounts}]]*/ [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initDashboardChart('revenueTrendChart', 'line',
+            revenueLabels, revenueValues, 'Monthly Billings (₹)'
+        );
+        initDashboardChart('serviceShareChart', 'doughnut',
+            serviceLabels, serviceCounts, 'Service Volume',
+            {
+                bg: ['rgba(0,240,255,0.3)', 'rgba(168,85,247,0.3)', 'rgba(16,185,129,0.3)', 'rgba(245,158,11,0.3)', 'rgba(239,68,68,0.3)'],
+                border: ['#00f0ff', '#a855f7', '#10b981', '#f59e0b', '#ef4444']
+            }
+        );
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>

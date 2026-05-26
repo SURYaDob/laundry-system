@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Order Details', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#details-content}, 'Booking Breakdown')}">
+    <div id="details-content">
+
+        <!-- Action Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <a th:href="@{/admin/orders}" class="btn btn-secondary" style="padding: 8px 16px;">
+                <i class="fas fa-arrow-left"></i> Back to Queue
+            </a>
+            <div style="display: flex; gap: 10px;">
+                <th:block th:if="${order.invoice != null}">
+                    <a th:href="@{/customer/invoices/download/{orderId}(orderId=${order.id})}" class="btn btn-success" style="padding: 8px 16px;">
+                        <i class="fas fa-file-pdf"></i> Download PDF Invoice
+                    </a>
+                </th:block>
+            </div>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom: 30px;">
+            <!-- Left: Order Specs & Items -->
+            <div>
+                <div class="card-panel fade-in-up" style="margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">
+                        <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary);">
+                            Order Specs: <span th:text="${order.orderNumber}">ORD-10023</span>
+                        </h3>
+                        <span th:class="'badge badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; font-size: 14px;">
+                        <div>
+                            <span style="color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 4px;">Booked Date</span>
+                            <strong style="color: var(--text-primary);" th:text="${#temporals.format(order.createdDate, 'dd-MM-yyyy HH:mm')}">25-05-2026 14:20</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 4px;">Pickup Date</span>
+                            <strong style="color: var(--text-primary);" th:text="${#temporals.format(order.pickupDate, 'dd-MM-yyyy HH:mm')}">26-05-2026 10:00</strong>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
+                        <div>
+                            <span style="color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 4px;">Expected Delivery</span>
+                            <strong style="color: var(--text-primary);" th:text="${#temporals.format(order.deliveryDate, 'dd-MM-yyyy')}">28-05-2026</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 4px;">Assigned Handler</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.staff != null ? order.staff.user.fullName : 'Unassigned'}">John Staff</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-panel fade-in-up">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 15px;">Booked Laundry Items</h3>
+                    <table class="custom-table" style="box-shadow: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Unit Rate (₹/Kg)</th>
+                                <th>Quantity (Kg/Pcs)</th>
+                                <th>Sub Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${order.orderItems}">
+                                <td th:text="${item.service.name}" style="font-weight: 600;">Wash &amp; Fold</td>
+                                <td th:text="'₹' + ${item.unitPrice}">₹50.00</td>
+                                <td th:text="${item.quantity}">3.5</td>
+                                <td th:text="'₹' + ${#numbers.formatDecimal(item.subTotal, 1, 'COMMA', 2, 'POINT')}">₹325.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right: Customer Info & Billing -->
+            <div>
+                <div class="card-panel fade-in-up" style="margin-bottom: 30px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                        <i class="fas fa-user-circle" style="color: var(--neon-cyan); margin-right: 8px;"></i> Customer Information
+                    </h3>
+                    <div style="font-size: 14px; display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Name</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.user.fullName}">Jane Doe</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Email</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.user.email}">jane@example.com</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Phone Number</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.phoneNumber}">9876543210</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-weight: 500;">Pickup/Delivery Address</span>
+                            <strong style="color: var(--text-primary);" th:text="${order.customer.address}">Flat 102, Green Avenue, Mumbai</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-panel fade-in-up">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                        <i class="fas fa-file-invoice-dollar" style="color: var(--neon-emerald); margin-right: 8px;"></i> Billing Breakdown
+                    </h3>
+                    <div style="font-size: 14px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">Services Subtotal:</span>
+                            <strong style="color: var(--text-primary);" th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">₹325.00</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">Taxes &amp; GST (18%):</span>
+                            <strong style="color: var(--text-primary);" th:text="'₹' + ${#numbers.formatDecimal(order.tax, 1, 'COMMA', 2, 'POINT')}">₹58.50</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: var(--neon-rose);">
+                            <span>Special Discounts:</span>
+                            <strong th:text="'-₹' + ${#numbers.formatDecimal(order.discount, 1, 'COMMA', 2, 'POINT')}">-₹0.00</strong>
+                        </div>
+                        <hr style="border: 0; border-top: 1.5px dashed var(--border-color); margin: 5px 0;">
+                        <div style="display: flex; justify-content: space-between; font-size: 16px;">
+                            <span style="font-weight: 700; color: var(--text-primary);">Total Invoiced Amount:</span>
+                            <strong style="color: var(--neon-cyan); font-size: 18px;" th:text="'₹' + ${#numbers.formatDecimal(order.finalAmount, 1, 'COMMA', 2, 'POINT')}">₹383.50</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <span style="color: var(--text-muted);">Payment Status:</span>
+                            <span th:if="${order.payment != null and order.payment.status == 'COMPLETED'}" class="badge badge-completed">Paid</span>
+                            <span th:if="${order.payment == null or order.payment.status != 'COMPLETED'}" class="badge badge-pending">Unpaid</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

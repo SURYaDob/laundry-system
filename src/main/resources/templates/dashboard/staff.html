@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head('Staff Dashboard', ~{})}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: app_layout(~{::#staff-content}, 'Staff Dashboard')}">
+    <div id="staff-content">
+
+        <!-- KPI Metrics Grid -->
+        <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Pending Assigned Tasks</div>
+                    <div class="stat-value" th:text="${pendingTasks}">5</div>
+                </div>
+                <div class="stat-icon stat-amber">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Completed Deliveries</div>
+                    <div class="stat-value" th:text="${completedTasks}">18</div>
+                </div>
+                <div class="stat-icon stat-green">
+                    <i class="fas fa-circle-check"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assigned Orders Table -->
+        <div class="table-container fade-in-up">
+            <div class="table-header">
+                <span class="table-title">
+                    <i class="fas fa-briefcase" style="color: var(--neon-cyan); margin-right: 8px;"></i> Assigned Work Queue
+                </span>
+            </div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Order No</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
+                        <th>Pickup Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${assignedOrders}">
+                        <td th:text="${order.orderNumber}" style="font-weight: 700;">ORD-10023</td>
+                        <td th:text="${order.customer.user.fullName}">Jane Doe</td>
+                        <td>
+                            <span th:class="'badge badge-' + ${#strings.toLowerCase(order.status)}" th:text="${order.status}">PENDING</span>
+                        </td>
+                        <td th:text="'₹' + ${#numbers.formatDecimal(order.finalAmount, 1, 'COMMA', 2, 'POINT')}">₹450.00</td>
+                        <td th:text="${order.pickupDate != null ? #temporals.format(order.pickupDate, 'dd-MM-yyyy HH:mm') : 'Not Scheduled'}">25-05-2026 14:20</td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <a th:href="@{/staff/orders/{id}(id=${order.id})}" class="btn btn-secondary" style="padding: 6px 10px; font-size: 13px;">
+                                    <i class="fas fa-cog"></i> Update Progress
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(assignedOrders)}">
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-smile" style="font-size: 32px; display: block; margin-bottom: 10px; color: var(--neon-emerald);"></i>
+                            All caught up! No laundry orders assigned to you.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
