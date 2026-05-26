@@ -1,425 +1,283 @@
-# 🧺 AquaClean Luxe — Laundry Management System
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17"/>
+  <img src="https://img.shields.io/badge/Spring_Boot-3.2.5-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Boot 3.2.5"/>
+  <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white" alt="Thymeleaf"/>
+  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/>
+  <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven"/>
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License MIT"/>
+</p>
 
-A full-featured, dark-themed laundry management web application built with **Spring Boot 3.2.5**, **Thymeleaf**, **Spring Security**, and **Swagger/OpenAPI**. Features a premium UI with neon-accent glassmorphism, real-time order tracking, role-based dashboards, and Swagger-documented REST APIs.
+<h1 align="center">🧺 AquaClean Luxe</h1>
+<p align="center">
+  <em>A full-featured Laundry Management System with role-based dashboards, real-time order tracking, and Swagger-documented REST APIs.</em>
+</p>
 
----
-
-## 📋 Prerequisites (Before Opening Eclipse)
-
-Make sure these are installed on your PC:
-
-| Required | Version | How to Check |
-|----------|---------|-------------|
-| **Java JDK** | 17 or higher | Open CMD → `java -version` |
-| **Maven** | 3.8+ (or use included `mvnw.cmd`) | Open CMD → `mvn -version` |
-| **Eclipse IDE** | Latest (with Spring Tools) | Already installed |
-| **Browser** | Chrome / Edge / Firefox | Already installed |
-
-> **Note:** The project includes the Maven Wrapper (`mvnw.cmd`), so you don't need to install Maven separately. Eclipse's built-in Maven will also work.
-
----
-
-## 🚀 Step 1 — Import Project into Eclipse
-
-1. **Open Eclipse**
-2. Go to **File → Import...**
-3. Select **Maven → Existing Maven Projects**
-4. Click **Next**
-5. Click **Browse...** and navigate to:
-   ```
-   C:\Users\suraj\laundry-system
-   ```
-6. Make sure `pom.xml` is checked in the list
-7. Click **Finish**
-
-Eclipse will now download dependencies and build the project. Wait for the progress bar in the bottom-right corner to complete.
-
-> ⏱ This may take 2-5 minutes on the first import.
+<p align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-demo-accounts">Demo Accounts</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-api-reference">API Reference</a> •
+  <a href="#-testing">Testing</a>
+</p>
 
 ---
 
-## 🚀 Step 2 — Run the Web Application
+## ✨ Features
 
-### Option A: Run from Eclipse (Recommended)
+| Role | Capabilities |
+|------|-------------|
+| 👑 **Admin** | Full control — manage orders, services, staff, view analytics & reports, download invoices |
+| 👔 **Staff** | View assigned tasks, update order progress (Picked Up → Washing → Ironing → Ready → Delivered) |
+| 👤 **Customer** | Place new orders, view order history, download PDF invoices, track real-time order status |
 
-1. In the **Project Explorer** (left panel), expand:
-   ```
-   laundry-system → src/main/java → com.laundry.system
-   ```
-2. Right-click on **`LaundrySystemApplication.java`**
-3. Select **Run As → Java Application** (or **Run As → Spring Boot App** if Spring Tools is installed)
-4. Wait for the console output to show:
-   ```
-   Started LaundrySystemApplication in X seconds
-   ```
+### 🖥️ UI Highlights
+- **Dark theme** with neon cyan, purple, and emerald accents
+- **Glassmorphism** card effects with animated particles
+- Role-specific dashboards with **Chart.js** analytics
+- **Toast notifications** and scroll animations
+- Responsive layout — works on desktop & tablet
 
-### Option B: Run from Command Line
-
-Open a **Command Prompt (CMD)** inside the project folder:
-
-```cmd
-cd C:\Users\suraj\laundry-system
-mvnw.cmd spring-boot:run
+### 📋 Order Lifecycle
+```
+PENDING → PICKED_UP → WASHING → IRONING → READY → OUT_FOR_DELIVERY → DELIVERED
+                                                                         ↕
+                                                                     CANCELLED
 ```
 
 ---
 
-### ✅ Confirm the App is Running
+## 🛠️ Tech Stack
 
-Open your browser and go to:
-
-👉 **http://localhost:8080**
-
-You should see the **AquaClean Luxe** dark-themed login page.
-
----
-
-## 🎭 Demo Accounts (Pre-Loaded Data)
-
-The app comes with **pre-loaded demo data** — no need to register! Just log in with any of these accounts:
-
-| Role | Email | Password | Full Name | What You Can Do |
-|------|-------|----------|-----------|----------------|
-| 👑 **ADMIN** | `admin@aquaclean.com` | `password123` | Arjun Sharma | Full access — manage orders, services, staff, view analytics |
-| 👔 **STAFF** | `raj@aquaclean.com` | `password123` | Raj Verma | View assigned tasks, update order progress (Washing) |
-| 👔 **STAFF** | `priya@aquaclean.com` | `password123` | Priya Patel | View assigned tasks, update order progress (Ironing) |
-| 👤 **CUSTOMER** | `amit@example.com` | `password123` | Amit Kumar | Place orders, view order history, download invoices |
-| 👤 **CUSTOMER** | `neha@example.com` | `password123` | Neha Singh | Place orders, view order history, download invoices |
-
-> **All accounts use the same password:** `password123`
-
-### What Demo Data is Included?
-
-✅ **5 laundry services** — Standard Wash (₹80/kg), Dry Clean (₹150/kg), Ironing Only (₹40/kg), Wash & Fold (₹100/kg), Premium Care (₹200/kg)
-✅ **2 staff members** — Raj (Washing & Dry Cleaning), Priya (Ironing & Folding)
-✅ **2 customers** — Amit and Neha with address and phone
-✅ **6 sample orders** in different statuses so the dashboard looks populated:
-   - Order 1: Delivered ✅
-   - Order 2: Ready for delivery 📦
-   - Order 3: Currently washing 🧺
-   - Order 4: Picked up 🚚
-   - Order 5: Pending ⏳
-   - Order 6: Out for delivery 🚛
-✅ **Payments, invoices, and notifications** linked to each order
-
-### Quick Login Instructions
-
-1. Open **http://localhost:8080/login**
-2. Enter `admin@aquaclean.com` and password `password123`
-3. You'll land on the **Admin Dashboard** with charts and stats
-4. Try `amit@example.com` to see the **Customer Dashboard** with order tracker
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Java 17, Spring Boot 3.2.5, Spring MVC, Spring Data JPA |
+| **Security** | Spring Security 6, BCrypt, Role-based access (RBAC) |
+| **Frontend** | Thymeleaf, HTML5, CSS3, JavaScript, Chart.js |
+| **Database** | H2 (dev), MySQL (prod) |
+| **API Documentation** | SpringDoc OpenAPI (Swagger UI) |
+| **Build Tool** | Maven 3.8+ |
+| **PDF Generation** | iTextPDF |
+| **Testing** | JUnit 5, Mockito, Spring Security Test |
 
 ---
 
-## 🌐 Step 3 — Browse the Web Application
+## 🚀 Quick Start
 
-All pages require you to be logged in (except Login & Register). Use the demo accounts above to log in, or register a new account.
+### Prerequisites
+- **Java JDK 17+** — verify with `java -version`
+- **Maven 3.8+** — or use the included `mvnw.cmd` wrapper
+- **Browser** — Chrome, Edge, or Firefox
 
-### Public Pages (No Login Required)
+### Run the Application
 
-| Page | Link |
-|------|------|
-| **Login** | http://localhost:8080/login |
-| **Register** | http://localhost:8080/register |
+```bash
+# Clone the repository
+git clone https://github.com/SURYaDob/laundry-system.git
+cd laundry-system
 
-> ℹ️ New registrations are automatically assigned the **CUSTOMER** role.
+# Run with Maven
+./mvnw spring-boot:run    # macOS / Linux
+mvnw.cmd spring-boot:run  # Windows
+```
 
-### Pages by Role
+The app starts on **http://localhost:8080** with demo data pre-loaded (no setup required).
 
-#### 👤 Customer Pages
+> **💡 Dev mode (default):** Uses H2 in-memory database — zero configuration needed.  
+> **⚙️ Production:** Switch to MySQL by setting `spring.profiles.active=prod` in `application.properties`.
 
-| Page | Link |
-|------|------|
-| **Customer Dashboard** | http://localhost:8080/dashboard |
-| **Place New Order** | http://localhost:8080/customer/orders/new |
-| **My Orders (History)** | http://localhost:8080/customer/orders |
+### Import into Eclipse (Optional)
 
-#### 👔 Staff Pages
-
-| Page | Link |
-|------|------|
-| **Staff Dashboard** | http://localhost:8080/dashboard |
-| **Assigned Tasks** | http://localhost:8080/staff/orders |
-| **Task Details** | http://localhost:8080/staff/orders/{id} |
-
-#### 🔧 Admin Pages
-
-| Page | Link |
-|------|------|
-| **Admin Dashboard** | http://localhost:8080/dashboard |
-| **Manage Orders** | http://localhost:8080/admin/orders |
-| **Order Details** | http://localhost:8080/admin/orders/{id} |
-| **Manage Services** | http://localhost:8080/admin/services |
-| **Manage Staff** | http://localhost:8080/admin/staff |
-| **Analytics & Reports** | http://localhost:8080/admin/reports |
-
-#### Utility Pages
-
-| Page | Link |
-|------|------|
-| **Access Denied (403)** | http://localhost:8080/access-denied |
-| **H2 Database Console** | http://localhost:8080/h2-console |
-
-> **H2 Console Login:** JDBC URL: `jdbc:h2:mem:laundrydb` | Username: `root` | Password: `root`
+1. **File → Import → Maven → Existing Maven Projects**
+2. Browse to the project directory
+3. Select `pom.xml` → **Finish**
+4. Run `LaundrySystemApplication.java` as **Spring Boot App**
 
 ---
 
-## 📡 Step 4 — Test REST APIs with Swagger UI
+## 🎭 Demo Accounts
 
-The project includes **Swagger UI** for interactive API testing directly in your browser.
+The app comes pre-loaded with demo data. Log in using any of these accounts:
 
-### Open Swagger UI
+| Role | Email | Password | Name |
+|------|-------|----------|------|
+| 👑 **ADMIN** | `admin@aquaclean.com` | `password123` | Arjun Sharma |
+| 👔 **STAFF** | `raj@aquaclean.com` | `password123` | Raj Verma (Washing & Dry Cleaning) |
+| 👔 **STAFF** | `priya@aquaclean.com` | `password123` | Priya Patel (Ironing & Folding) |
+| 👤 **CUSTOMER** | `amit@example.com` | `password123` | Amit Kumar |
+| 👤 **CUSTOMER** | `neha@example.com` | `password123` | Neha Singh |
+
+**All accounts use the same password:** `password123`
+
+> New user registrations are automatically assigned the **CUSTOMER** role.
+
+### 📦 Pre-loaded Demo Data
+- **5 laundry services** — Standard Wash (₹80/kg), Dry Clean (₹150/kg), Ironing Only (₹40/kg), Wash & Fold (₹100/kg), Premium Care (₹200/kg)
+- **2 staff members** with specializations
+- **2 customers** with addresses and phone numbers
+- **14 sample orders** spanning 2 months with various statuses, payments, invoices, and notifications
+
+---
+
+## 🏗️ Architecture
+
+```
+src/
+├── main/
+│   ├── java/com/laundry/system/
+│   │   ├── LaundrySystemApplication.java    # 🚀 Entry point
+│   │   ├── config/                          # Security, JPA, Swagger, Data seeding
+│   │   ├── controller/                      # Thymeleaf page controllers
+│   │   │   ├── api/                         # REST API controllers
+│   │   │   ├── AuthController.java          # Login & registration
+│   │   │   ├── DashboardController.java     # Role-based dashboards
+│   │   │   ├── OrderController.java         # Admin order management
+│   │   │   ├── CustomerController.java      # Customer views
+│   │   │   ├── StaffController.java         # Staff management (CRUD)
+│   │   │   ├── StaffOperationsController.java # Staff task operations
+│   │   │   ├── ServiceController.java       # Service management (CRUD)
+│   │   │   ├── InvoiceController.java       # PDF invoice download
+│   │   │   └── ReportsController.java       # Analytics & reports
+│   │   ├── entity/                          # JPA entities (User, Order, Service, etc.)
+│   │   ├── repository/                      # Spring Data JPA repositories
+│   │   ├── service/                         # Business logic layer
+│   │   ├── dto/                             # Data transfer objects
+│   │   └── exception/                       # Global error handling
+│   └── resources/
+│       ├── application.properties           # App configuration
+│       ├── static/css/dashboard.css         # Dark theme styles
+│       ├── static/js/dashboard.js           # Charts & interactions
+│       └── templates/                       # 16 Thymeleaf views
+└── test/                                    # 100+ unit & integration tests
+```
+
+---
+
+## 📖 API Reference
+
+### REST API Endpoints
+
+#### Orders (`/api/orders`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/api/orders` | ADMIN/STAFF | List all orders |
+| `GET` | `/api/orders/{id}` | Any logged-in | Get order by ID |
+| `GET` | `/api/orders/number/{orderNumber}` | Any logged-in | Get order by order number |
+| `POST` | `/api/orders` | CUSTOMER | Place a new order |
+| `PATCH` | `/api/orders/{id}/status` | ADMIN/STAFF | Update order status |
+| `PATCH` | `/api/orders/{id}/assign` | ADMIN | Assign staff to order |
+| `DELETE` | `/api/orders/{id}` | ADMIN | Delete an order |
+
+#### Services (`/api/services`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/api/services` | Public | List all services |
+| `GET` | `/api/services/{id}` | Public | Get service by ID |
+| `POST` | `/api/services` | ADMIN | Create a service |
+| `PUT` | `/api/services/{id}` | ADMIN | Update a service |
+| `DELETE` | `/api/services/{id}` | ADMIN | Delete a service |
+
+### Interactive API Docs
+
+Once running, access **Swagger UI** at:
 
 👉 **http://localhost:8080/swagger-ui/index.html**
 
-You'll see the **AquaClean Luxe API** documentation page listing all REST endpoints.
+API specs also available in:
+- **JSON:** `http://localhost:8080/v3/api-docs`
+- **YAML:** `http://localhost:8080/v3/api-docs.yaml`
 
-### OpenAPI Spec Links (for Postman or other tools)
+### Sample API Call
 
-| Format | Link |
-|--------|------|
-| **JSON** | http://localhost:8080/v3/api-docs |
-| **YAML** | http://localhost:8080/v3/api-docs.yaml |
+```bash
+# Public — list all services
+curl http://localhost:8080/api/services
 
----
-
-## 🧪 Step 5 — API Testing Walkthrough (In Swagger UI)
-
-### Public API — No Login Needed
-
-These endpoints work without authentication — great for a quick test:
-
-**1. List all services**
-
-- In Swagger UI, expand **Services → GET `/api/services`**
-- Click **Try it out**
-- Click **Execute**
-- ✅ You should get a **200 OK** response with a JSON array of services
-
-**2. Get a specific service**
-
-- Expand **Services → GET `/api/services/{id}`**
-- Enter `id = 1`
-- Click **Execute**
-- ✅ You should get a **200 OK** with service details
-
----
-
-### Authenticated API — Testing with Session Login
-
-For endpoints that require login (orders, admin operations), you need to first log in through the web app, then Swagger UI will use the same session.
-
-**Step-by-step:**
-
-1. **Open a new browser tab** and go to **http://localhost:8080/login**
-2. Log in with your credentials
-3. **Go back to the Swagger UI tab** (http://localhost:8080/swagger-ui/index.html)
-4. The session cookie is now shared — you can test authenticated endpoints
-
-**3. Get all orders (Admin/Staff only)**
-
-- Expand **Orders → GET `/api/orders`**
-- Click **Try it out → Execute**
-- ✅ If logged in as ADMIN or STAFF, you get **200 OK** with orders list
-
-**4. Place a new order (Customer role)**
-
-- Expand **Orders → POST `/api/orders`**
-- Click **Try it out**
-- Enter this JSON body:
-  ```json
-  {
+# Authenticated — place an order (use session cookie)
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{
     "customerId": 1,
     "pickupDate": "2026-06-10T10:00:00",
     "items": [
       {"serviceId": 1, "quantity": 2.0},
       {"serviceId": 2, "quantity": 1.5}
     ]
-  }
-  ```
-- Click **Execute**
-- ✅ You should get a **201 Created** response
-
-**5. Update order status (Admin/Staff)**
-
-- Expand **Orders → PATCH `/api/orders/{id}/status`**
-- Enter `id = 1`, `status = PICKED_UP`
-- Click **Execute**
-- ✅ You should get **200 OK**
-
-**6. Delete an order (Admin only)**
-
-- Expand **Orders → DELETE `/api/orders/{id}`**
-- Enter `id = 1`
-- Click **Execute**
-- ✅ You should get **204 No Content**
-
----
-
-## 📋 Complete API Endpoint Reference
-
-### Order API (`/api/orders`)
-
-| Method | Endpoint | Auth Required | What It Does |
-|--------|----------|---------------|-------------|
-| GET | `/api/orders` | ✅ ADMIN/STAFF | List all orders |
-| GET | `/api/orders/{id}` | ✅ Any logged-in user | Get order by ID |
-| GET | `/api/orders/number/{orderNumber}` | ✅ Any logged-in user | Get order by order number |
-| POST | `/api/orders` | ✅ CUSTOMER | Place a new order |
-| PATCH | `/api/orders/{id}/status` | ✅ ADMIN/STAFF | Update order status |
-| PATCH | `/api/orders/{id}/assign` | ✅ ADMIN | Assign staff to order |
-| DELETE | `/api/orders/{id}` | ✅ ADMIN | Delete an order |
-
-### Service API (`/api/services`) — Partially Public
-
-| Method | Endpoint | Auth Required | What It Does |
-|--------|----------|---------------|-------------|
-| GET | `/api/services` | ❌ No (Public) | List all services |
-| GET | `/api/services/{id}` | ❌ No (Public) | Get service by ID |
-| POST | `/api/services` | ✅ ADMIN | Create a new service |
-| PUT | `/api/services/{id}` | ✅ ADMIN | Update a service |
-| DELETE | `/api/services/{id}` | ✅ ADMIN | Delete a service |
-
-> **Tip:** Public GET endpoints are great for a quick sanity check that the API is running.
-
----
-
-## 🧪 How to Run Tests
-
-### From Eclipse
-
-1. Right-click the project in **Project Explorer**
-2. Select **Run As → Maven test**
-3. Watch the **Console** tab for results
-
-### From Command Line
-
-```cmd
-cd C:\Users\suraj\laundry-system
-
-# Run ALL tests
-mvnw.cmd test
-
-# Run a specific test class
-mvnw.cmd test -Dtest=OrderServiceImplTest
-
-# Run tests with detailed output
-mvnw.cmd test -Dtest=OrderApiControllerTest -Dspring.test.console.output=always
+  }'
 ```
 
-All **100+ tests** should pass with **BUILD SUCCESS**.
+---
+
+## 🧪 Testing
+
+```bash
+# Run ALL tests
+./mvnw test
+
+# Run a specific test class
+./mvnw test -Dtest=OrderServiceImplTest
+
+# Run tests with verbose output
+./mvnw test -Dtest=OrderApiControllerTest -Dspring.test.console.output=always
+```
+
+All **100+ tests** cover:
+- ✅ **Controllers** — 12 controller test classes (web layer)
+- ✅ **Services** — 6 service implementation test classes (business logic)
+- ✅ **Repositories** — 3 repository test classes (data access)
+- ✅ **Security** — Authentication, authorization, role-based access
+
+---
+
+## 🔗 Quick Links
+
+| Page | URL |
+|------|-----|
+| 🏠 Login | `/login` |
+| 📝 Register | `/register` |
+| 📊 Dashboard | `/dashboard` |
+| 📖 Swagger UI | `/swagger-ui/index.html` |
+| 📄 OpenAPI JSON | `/v3/api-docs` |
+| 🗄️ H2 Console | `/h2-console` |
+
+> **H2 Console:** JDBC URL: `jdbc:h2:mem:laundrydb` | Username: `root` | Password: `root`
 
 ---
 
 ## ⚙️ Configuration
 
-### Switch Database (Dev vs Prod)
+### Switch to Production (MySQL)
 
-The app runs in **dev** mode by default (H2 in-memory database).
-
-To switch to **production** (MySQL):
-
-1. Open **`src/main/resources/application.properties`**
-2. Change this line:
-   ```properties
-   spring.profiles.active=prod
-   ```
-3. Update MySQL credentials in **`application-prod.properties`**
+1. Open `src/main/resources/application.properties`
+2. Change `spring.profiles.active=dev` to `spring.profiles.active=prod`
+3. Update MySQL credentials in `application-prod.properties`
 
 ### Change Port
 
-In **`application.properties`**:
 ```properties
 server.port=9090
 ```
-Then all links become `http://localhost:9090/...`
+
+### Database Schema
+
+The app uses **JPA auto-DDL** (`spring.jpa.hibernate.ddl-auto=update`) — tables are created and updated automatically based on entity classes. No manual SQL scripts needed.
 
 ---
 
-## 🐞 Troubleshooting in Eclipse
+## 🐞 Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| **Project has errors (red X)** | Right-click project → **Maven → Update Project...** → Check all boxes → OK |
-| **Cannot find `LaundrySystemApplication`** | Make sure the import finished. Check `src/main/java/com/laundry/system/LaundrySystemApplication.java` exists |
-| **Port 8080 already in use** | Change `server.port` in `application.properties` to 9090 |
-| **Swagger UI shows blank page** | Try the direct URL: http://localhost:8080/swagger-ui/index.html |
-| **"White label error page" after login** | You may not have the right role for that page. See the role-based table above |
-| **H2 Console returns 403** | Make sure you're in dev mode (`spring.profiles.active=dev` in `application.properties`) |
-| **Tests fail with compilation errors** | Right-click project → **Maven → Update Project...** |
-| **App runs but pages look unstyled** | Hard refresh: **Ctrl + F5** (or **Ctrl + Shift + R**) in browser |
-| **Eclipse not showing Thymeleaf templates** | Install **Spring Tools 4** from Eclipse Marketplace (Help → Eclipse Marketplace → search "Spring Tools") |
+| **Port 8080 in use** | Change `server.port` in `application.properties` |
+| **Styling broken** | Hard refresh: **Ctrl+F5** or **Ctrl+Shift+R** |
+| **H2 Console 403** | Ensure `spring.profiles.active=dev` |
+| **White label error** | Check role-based access — you may not have permission |
 
 ---
 
-## 🎨 Theme
-
-The entire UI uses a custom **dark theme** with:
-- Deep navy/charcoal backgrounds
-- Neon cyan, purple, and emerald accents
-- Glassmorphism card effects
-- Animated particles on auth pages
-- Chart.js integration with dark-themed charts
-- Toast notifications and scroll animations
-
----
-
-## 🏗️ Project Structure
-
-```
-laundry-system/
-├── pom.xml                              # Maven config (Spring Boot 3.2.5)
-├── mvnw.cmd                             # Maven Wrapper (no Maven install needed)
-│
-├── src/main/java/com/laundry/system/
-│   ├── LaundrySystemApplication.java    # 🟢 Entry point — RUN THIS
-│   ├── config/
-│   │   ├── SecurityConfig.java          # Login, roles, CSRF, Swagger
-│   │   ├── JpaConfig.java               # JPA auditing
-│   │   └── OpenApiConfig.java           # Swagger/OpenAPI config
-│   ├── controller/                      # Web page controllers (Thymeleaf)
-│   │   ├── AuthController.java
-│   │   ├── DashboardController.java
-│   │   ├── OrderController.java
-│   │   ├── CustomerController.java
-│   │   ├── StaffController.java
-│   │   ├── StaffOperationsController.java
-│   │   ├── ServiceController.java
-│   │   ├── InvoiceController.java
-│   │   ├── ReportsController.java
-│   │   └── api/                         # REST API controllers
-│   │       ├── OrderApiController.java
-│   │       └── ServiceApiController.java
-│   ├── entity/                          # JPA database models
-│   ├── repository/                      # Database access layer
-│   ├── service/                         # Business logic
-│   ├── dto/                             # Data transfer objects
-│   └── exception/                       # Error handling
-│
-├── src/main/resources/
-│   ├── application.properties           # App config (port, profile)
-│   ├── application-dev.properties       # H2 database settings
-│   ├── application-prod.properties      # MySQL database settings
-│   ├── static/
-│   │   ├── css/dashboard.css            # Dark theme CSS
-│   │   └── js/dashboard.js              # Charts, toasts, animations
-│   └── templates/                       # 16 Thymeleaf HTML pages
-│
-└── src/test/java/com/laundry/system/    # 100+ tests
-```
-
----
-
-## 📌 Quick Reference — Important Links
-
-Once the app is running on **http://localhost:8080**:
-
-| What | Link |
-|------|------|
-| 🏠 Home / Login | http://localhost:8080/login |
-| 📝 Register | http://localhost:8080/register |
-| 📊 Dashboard | http://localhost:8080/dashboard |
-| 📖 Swagger UI (API Docs) | http://localhost:8080/swagger-ui/index.html |
-| 📄 OpenAPI JSON | http://localhost:8080/v3/api-docs |
-| 📄 OpenAPI YAML | http://localhost:8080/v3/api-docs.yaml |
-| 🗄️ H2 Database Console | http://localhost:8080/h2-console |
+<p align="center">
+  Built with ❤️ using Spring Boot &middot; Powered by ☕ & 🧺
+</p>
