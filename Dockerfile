@@ -1,5 +1,5 @@
 # ===========================================
-# Laundry System - Koyeb Deployment (with H2)
+# Laundry System - Render Deployment (H2 in-memory DB)
 # ===========================================
 # Build Stage
 FROM maven:3.9-eclipse-temurin-17 AS builder
